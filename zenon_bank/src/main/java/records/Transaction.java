@@ -2,8 +2,8 @@ package records;
 
 import java.math.BigDecimal;
 
-public record Transaction(Long step, TypeTransaction type, BigDecimal amount, String nameOrig, BigDecimal oldbalanceOrg, BigDecimal newbalanceOrig,
-                          String nameDest, BigDecimal oldbalanceDest, BigDecimal newbalanceDest, boolean isFraud, boolean isFlaggedFraud) {
+public record Transaction(Long step, TypeTransaction type, BigDecimal amount, TransactionCustomer dataCustomers,
+                           boolean isFraud, boolean isFlaggedFraud) {
 
     public enum TypeTransaction{
         PAYMENT, DEBIT, TRANSFER, CASH_IN, CASH_OUT
@@ -15,12 +15,7 @@ public record Transaction(Long step, TypeTransaction type, BigDecimal amount, St
                 "step=" + step +
                 ", type=" + type +
                 ", amount=" + amount +
-                ", nameOrig='" + nameOrig + '\'' +
-                ", oldbalanceOrg=" + oldbalanceOrg +
-                ", newbalanceOrig=" + newbalanceOrig +
-                ", nameDest='" + nameDest + '\'' +
-                ", oldbalanceDest=" + oldbalanceDest +
-                ", newbalanceDest=" + newbalanceDest +
+                ", dataCustomers='" + dataCustomers + '\'' +
                 ", isFraud=" + isFraud +
                 ", isFlaggedFraud=" + isFlaggedFraud +
                 '}';
