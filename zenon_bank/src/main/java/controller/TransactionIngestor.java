@@ -1,6 +1,7 @@
 package controller;
 
 import records.Transaction;
+import records.TransactionCustomer;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
@@ -71,8 +72,8 @@ public class TransactionIngestor {
         boolean isFraud = chunks[9].equals("1");
         boolean isFlaggedFraud = chunks[10].equals("1");
 
-
-        return new Transaction(step,type, amount, nameOrig, oldbalanceOrig, newbalanceOrig, nameDest, oldbalanceDest, newbalanceDest, isFraud, isFlaggedFraud);
+        TransactionCustomer transactionCustomer = new TransactionCustomer(nameOrig, oldbalanceOrig, newbalanceOrig, nameDest, oldbalanceDest, newbalanceDest);
+        return new Transaction(step,type, amount, transactionCustomer, isFraud, isFlaggedFraud);
     }
 
 }
