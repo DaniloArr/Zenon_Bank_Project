@@ -7,9 +7,7 @@ import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class TransactionIngestor {
 
@@ -22,17 +20,18 @@ public class TransactionIngestor {
                     .skip(1)
                     .limit(1001)
                     .map(this::parseTransaction)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
                     .toList();
         }catch (Exception ex){
             throw new RuntimeException("Error to open archive: " + fileName, ex);
         }
     }
 
-    public List<Transaction> readArchiveFileInputStream (String fileName){
+    public List<Optional<Transaction>>readArchiveFileInputStream (String fileName){
 
-        List<Transaction> transactionsList = new ArrayList<>();
+        List<Optional<Transaction>> transactionsList = new ArrayList<>();
         int countLines = 0;
-        //Path path = Paths.get("data/PS_20174392719_1491204439457_log.csv");
 
         try(FileInputStream fileInputStream = new FileInputStream(fileName);
             Scanner scanner = new Scanner(fileInputStream)){
@@ -57,23 +56,42 @@ public class TransactionIngestor {
         return transactionsList;
     }
 
-    private Transaction parseTransaction(String line) {
+    private Optional<Transaction> parseTransaction(String line) {
+        try{
 
-        String[] chunks = line.split(",");
-        Long step = Long.parseLong(chunks[0]);
-        Transaction.TypeTransaction  type = Transaction.TypeTransaction.valueOf(chunks[1]);
-        BigDecimal amount = new BigDecimal(chunks[2]);
-        String nameOrig = chunks[3];
-        BigDecimal oldbalanceOrig = new BigDecimal(chunks[4]);
-        BigDecimal newbalanceOrig = new BigDecimal(chunks[5]);
-        String nameDest = (chunks[6]);
-        BigDecimal oldbalanceDest = new BigDecimal(chunks[7]);
-        BigDecimal newbalanceDest = new BigDecimal(chunks[8]);
-        boolean isFraud = chunks[9].equals("1");
-        boolean isFlaggedFraud = chunks[10].equals("1");
+            String[] chunks = line.split(",");
+            Long step = Long.parseLong(chunks[0]);
+            Transaction.TypeTransaction  type = Transaction.TypeTransaction.valueOf(chunks[1]);
 
-        TransactionCustomer transactionCustomer = new TransactionCustomer(nameOrig, oldbalanceOrig, newbalanceOrig, nameDest, oldbalanceDest, newbalanceDest);
-        return new Transaction(step,type, amount, transactionCustomer, isFraud, isFlaggedFraud);
+            if (chunks[2] == null || chunks[2].trim().isEmpty()) throw new IllegalAccessException("O valor de amount nao pode ser nulo nem vazio");
+            BigDecimal amount = new BigDecimal(chunks[2]);
+
+            String nameOrig = chunks[3];
+            if (chunks[4] == null || chunks[4].trim().isEmpty()) throw new IllegalAccessException("O valor de amount nao pode ser nulo nem vazio");
+            BigDecimal oldbalanceOrig = new BigDecimal(chunks[4]);
+
+            if (chunks[5] == null || chunks[5].trim().isEmpty()) throw new IllegalAccessException("O valor de amount nao pode ser nulo nem vazio");
+            BigDecimal newbalanceOrig = new BigDecimal(chunks[5]);
+
+            String nameDest = (chunks[6]);
+
+            if (chunks[7] == null || chunks[7].trim().isEmpty()) throw new IllegalAccessException("O valor de amount nao pode ser nulo nem vazio");
+            BigDecimal oldbalanceDest = new BigDecimal(chunks[7]);
+
+            if (chunks[8] == null || chunks[8].trim().isEmpty()) throw new IllegalAccessException("O valor de amount nao pode ser nulo nem vazio");
+            BigDecimal newbalanceDest = new BigDecimal(chunks[8]);
+
+            boolean isFraud = chunks[9].equals("1");
+            boolean isFlaggedFraud = chunks[10].equals("1");
+
+            TransactionCustomer customerOrigin = new TransactionCustomer(nameOrig, oldbalanceOrig, newbalanceOrig);
+            TransactionCustomer customerDest = new TransactionCustomer(nameDest, oldbalanceDest, newbalanceDest);
+            return Optional.of(new Transaction(step, type, amount, customerOrigin, customerDest, isFraud, isFlaggedFraud));
+        } catch (Exception ex){
+            System.err.println("Erro: " + line + "|" + ex);
+        }
+
+        return Optional.empty();
     }
 
 }
