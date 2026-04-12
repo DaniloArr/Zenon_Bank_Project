@@ -1,8 +1,10 @@
+import controller.FraudAnalyzer;
 import controller.TransactionIngestor;
 import records.Transaction;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import static records.Transaction.TypeTransaction.*;
 
@@ -18,10 +20,30 @@ public class Main {
 //                "C873221189",new BigDecimal("6510099.11"),new BigDecimal("7360101.63"),1,0);
 
         TransactionIngestor transactionIngestor = new TransactionIngestor();
-        String fileName = "data/paysim_with_bad_data.csv";
+        String fileName = "data/PS_20174392719_1491204439457_log.csv";
         List<Transaction> transactions = transactionIngestor.readArchiveFiles(fileName);
-        transactions.forEach(System.out::println);
-        System.out.println(transactions.size());
+//        transactions.forEach(System.out::println);
+//        System.out.println(transactions.size());
+
+        FraudAnalyzer fraudAnalyzer = new FraudAnalyzer(transactions);
+        long totalFraudes = fraudAnalyzer.countFraud();
+        System.out.println("Total de fraude eh: " + totalFraudes);
+
+        List<Transaction> highestFrauds = fraudAnalyzer.findHighestValueFrauds(3);
+        System.out.println("Maiores valores de fraude");
+        highestFrauds.stream().map(Transaction::amount).forEach(System.out::println);
+
+        List<String> highestSuspicous = fraudAnalyzer.findHighestSuspicousClients(5);
+        System.out.println("Maiores suspeitos: ");
+        highestSuspicous.forEach(System.out::println);
+
+        BigDecimal totalFraude = fraudAnalyzer.prejuizoTotal();
+        System.out.println("Prejuizo total: " + totalFraude);
+
+        Map<Transaction.TypeTransaction, Long> countFrauds = fraudAnalyzer.countFraudsByType();
+        System.out.println("Fraudes por tipo: ");
+        System.out.println(countFrauds);
+
 
     }
 }
