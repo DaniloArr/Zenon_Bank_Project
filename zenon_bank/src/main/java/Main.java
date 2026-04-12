@@ -18,9 +18,9 @@ public class Main {
 //                "C873221189",new BigDecimal("6510099.11"),new BigDecimal("7360101.63"),1,0);
 
         TransactionIngestor transactionIngestor = new TransactionIngestor();
-        String fileName = "data/PS_20174392719_1491204439457_log.csv";
+        String fileName = "data/paysim_with_bad_data.csv";
         List<Transaction> transactions = transactionIngestor.readArchiveFiles(fileName);
-        transactions.stream().limit(10).forEach(System.out::println);
+        transactions.forEach(System.out::println);
         System.out.println(transactions.size());
 
     }
