@@ -13,12 +13,11 @@ public class TransactionIngestor {
 
     public List<Transaction> readArchiveFiles(String fileName){
         Path path = Path.of(fileName);
-
         try{
             List<String> lines = Files.readAllLines(path);
             return lines.stream()
                     .skip(1)
-                    .limit(50001)
+                    .limit(100000)
                     .map(this::parseTransaction)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
@@ -39,17 +38,13 @@ public class TransactionIngestor {
             while (scanner.hasNextLine()){
                 String line = scanner.nextLine();
                 countLines++;
-
                 if (countLines == 1){
                     continue;
                 } else if(countLines > 1001){
                     break;
                 }
-
                 transactionsList.add(parseTransaction(line));
             }
-
-
         } catch (Exception e){
             throw new RuntimeException("Error to open archive: " + fileName, e);
         }

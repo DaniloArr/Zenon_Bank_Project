@@ -1,17 +1,14 @@
-import controller.FraudAnalyzer;
 import controller.TransactionIngestor;
+import interfaces.TransactionRepository;
 import records.Transaction;
+import repository.TransactionListRepository;
+import repository.TransactionMapRepository;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-
-import static records.Transaction.TypeTransaction.*;
+import java.util.Optional;
 
 public class Main {
     static void main() {
-
-
 
 //        Transaction transaction1 = new Transaction(1L, PAYMENT, new BigDecimal("9839.64"), "C1231006815",new BigDecimal("170136.0"),new BigDecimal("160296.36"),
 //            "M1979787155",new BigDecimal("0.0"),new BigDecimal("0.0"),0,0);
@@ -25,6 +22,7 @@ public class Main {
 //        transactions.forEach(System.out::println);
 //        System.out.println(transactions.size());
 
+        /*
         FraudAnalyzer fraudAnalyzer = new FraudAnalyzer(transactions);
         long totalFraudes = fraudAnalyzer.countFraud();
         System.out.println("Total de fraude eh: " + totalFraudes);
@@ -44,6 +42,30 @@ public class Main {
         System.out.println("Fraudes por tipo: ");
         System.out.println(countFrauds);
 
+         */
+        IO.println("--------------------------------------------------------------");
+
+        TransactionRepository transactionRepository;
+
+        transactionRepository = new TransactionListRepository(transactions);
+        String notFoundOriginName = "C12345";
+        transactionRepository.findCustomerOriginByName(notFoundOriginName)
+                .ifPresentOrElse(IO::println, () -> IO.println("Transacao nao encontrada para " + notFoundOriginName));
+
+        String existingOriginName = "C1868032458";
+
+        long startTimeList = System.nanoTime();
+        transactionRepository.findCustomerOriginByName(existingOriginName)
+                .ifPresentOrElse(IO::println, () -> IO.println("Transacao nao encontrada para " + existingOriginName));
+        long endTimeList = System.nanoTime();
+        IO.println("Tempo de busca - List (ms): " + (endTimeList - startTimeList) / 1_000_000.0);
+
+        transactionRepository = new TransactionMapRepository(transactions);
+        startTimeList = System.nanoTime();
+        transactionRepository.findCustomerOriginByName(existingOriginName)
+                .ifPresentOrElse(IO::println, () -> IO.println("Transacao nao encontrada para " + existingOriginName));
+        endTimeList = System.nanoTime();
+        IO.println("Tempo de busca - Map (ms): " + (endTimeList - startTimeList) / 1_000_000.0);
 
     }
 }
