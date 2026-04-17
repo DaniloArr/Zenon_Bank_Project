@@ -17,7 +17,7 @@ public class TransactionIngestor {
             List<String> lines = Files.readAllLines(path);
             return lines.stream()
                     .skip(1)
-                    .limit(100000)
+                    .limit(10000)
                     .map(this::parseTransaction)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
@@ -55,7 +55,7 @@ public class TransactionIngestor {
         try{
 
             String[] chunks = line.split(",");
-            Long step = Long.parseLong(chunks[0]);
+            int step = Integer.parseInt(chunks[0]);
             Transaction.TypeTransaction  type = Transaction.TypeTransaction.valueOf(chunks[1]);
 
             if (chunks[2] == null || chunks[2].trim().isEmpty()) throw new IllegalAccessException("O valor de amount nao pode ser nulo nem vazio");

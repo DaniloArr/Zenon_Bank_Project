@@ -3,7 +3,7 @@ package records;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public record Transaction(Long step, TypeTransaction type, BigDecimal amount, TransactionCustomer customersOrigin,
+public record Transaction(int step, TypeTransaction type, BigDecimal amount, TransactionCustomer customersOrigin,
                           TransactionCustomer customersDest, boolean isFraud, boolean isFlaggedFraud) {
 
     public enum TypeTransaction{

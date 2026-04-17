@@ -22,7 +22,6 @@ public class ReportMain {
             currencyFormatter.setCurrency(Currency.getInstance("USD"));
         }
 
-
         var resourceBundle = ResourceBundle.getBundle("report", locale);
 
         var transactionReport = new TransactionReport();
